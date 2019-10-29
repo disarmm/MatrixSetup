@@ -40,6 +40,9 @@ select gmanPath in "${existingInstall[@]}" "Abort Install" ; do
 	echo "WARNING: This will erase your existing chaindata and replace it with the 1405031 snapshot"
 	sleep 1
 	pause '	   Press [Enter] again to confirm or Ctrl+C to abort'
+	lb
+	echo "Downloading and install files..."
+	sleep 2
 	rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
 	mv $gmanPath/chaindata/keystore $gmanPath/keystore
 	rm -rf $gmanPath/chaindata $gmanPath/snapdir
