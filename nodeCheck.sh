@@ -6,14 +6,20 @@ function lb(){
 
 
 function mine(){
+echo "This is a list of your containers"
 docker ps | grep nodeConfig
+lb
+echo "This is your status list. Reference the order in the above list"
 for m in $(docker ps | grep nodeConfig | awk {'print $1'}) ; do
         docker exec -i $m /bin/bash -c "/matrix/gman attach /matrix/chaindata/gman.ipc -exec man.mining"
 done
 }
 
 function sync(){
+echo "This is a list of your containers"
 docker ps | grep nodeConfig
+lb
+echo "This is your status list. Reference the order in the above list"
 for s in $(docker ps | grep nodeConfig | awk {'print $1'}) ; do
         docker exec -i $s /bin/bash -c "/matrix/gman attach /matrix/chaindata/gman.ipc -exec man.syncing"
 done
