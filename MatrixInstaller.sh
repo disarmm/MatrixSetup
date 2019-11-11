@@ -224,15 +224,17 @@ echo "This installation type will install your matrix mining node as a standalon
 lb
 confirm "${WHITE}Would you like to proceed? [y/n]${RES}"
 newInstall=( $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 >= 150 {print}' | awk '$4 !~/M/ {print}' | awk 'length($4) >= 4 {print}' | awk '{print $6}') )
-newInstallPath="${CYAN}Select a path to install your new Matrix Node:${RES}"
+newInstallPath="${WHITE}Select a path to install your new Matrix Node:${RES}"
 lb
 PS3="$newInstallPath "
+echo -en ${CGREEN}
 select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
     if (( REPLY == 1 + ${#newInstall[@]} )) ; then
 	exit
 
     elif (( REPLY > 0 && REPLY <= ${#newInstall[@]} )) ; then
         lb
+	echo -en ${CRES}
         echo  "You have selected to install to..."
 	echo -en ${CGREEN}
         df -h $matrixPath | sed -n '2 p'
@@ -241,9 +243,9 @@ select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
         pause 'If this is correct, press [Enter] to confirm, or Ctrl+C to abort installation'
 	mkdir -p $matrixPath/matrix/
 	lb
-	echo "${WHITE}Creating SignAccount.json file...${RES}"
+	echo "Creating signAccount.json file..."
 	lb
-	echo "${GREEN}Please enter your wallet B address below and hit enter${RES}"
+	echo "${WHITE}Please enter your wallet B address below and hit enter${RES}"
 	read manWallet
 	lb
 	echo -e "WARNING: YOUR WALLET B PASSWORD SHOULD BE DIFFERENT THAN YOUR WALLET A PASSWORD"
@@ -256,9 +258,12 @@ select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
 	echo "${GREEN}Please enter your wallet B password below and hit enter${RES}"
 	read manPasswd
 	echo -e '[\n{\n"Address":"'$manWallet'",\n"Password":"'$manPasswd'"\n}\n]' > $matrixPath/matrix/signAccount.json
+	#signAccount="[\n{\n"Address":"$manWallet",\n"Password":"$manPasswd"\n}\n]"
+	#cat $matrixPath/matrix/signAccount.json
+	#printf "%s\n" "[" "{" "\"Address\":\"$manWallet\"," "\"Password\":\"$manPasswd\"" "}" "]"
 	lb
 	echo "Downloading and installing files..."
-	echo "${YELLOW}POINT OF NO RETURN{$RES}"
+	echo "${YELLOW}POINT OF NO RETURN${RES}"
 	sleep 2
 	wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrix/1405031.tar.gz && tar -zxvf $matrixPath/matrix/1405031.tar.gz -C $matrixPath/matrix/
         wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $matrixPath/matrix/gman && chmod a+x /$matrixPath/matrix/gman
@@ -273,14 +278,15 @@ select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
 	echo "Note: Please choose a different password than your Wallet B password"
 	sleep 1
 	lb
-	pause '		Press [Return] to continue]'
+	read -ps "	Press [Return] if you understand"
 	$matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata aes --aesin $matrixPath/matrix/signAccount.json --aesout $matrixPath/matrix/entrust.json
-	echo "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below"
+	rm $matrixPath/matrix/signAccount.json
+	echo "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below, then press enter"
 	read matrixKeystore
-	echo -e "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/wallet.file
+	echo "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/wallet.file
 	echo -e "if [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanRunScript.sh
 	chmod 775 $matrixPath/matrix/gmanRunScript.sh
-	echo -e "alias gmanMatrix=/$matrixPath/gmanRunScript.sh" >> ~/.bashrc
+	echo "alias gmanMatrix=/$matrixPath/gmanRunScript.sh" >> ~/.bashrc
 	source ~/.bashrc
 	clear
 	curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
