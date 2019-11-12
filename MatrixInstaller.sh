@@ -59,7 +59,7 @@ lb
 echo "${RED}PLEASE READ EVERY PROMPT CAREFULLY TO AVOID DATA LOSS${RES}"
 lb
 echo "${WHITE} 
-This installer will walk you through a few different types of installations. There are several steps that require confirmation before any files or data will be modified. Pressing Ctrl+C will halt the install any time before the ${YELLOW}POINT OF NO RETURN${WHITE}. You will also have several prompts that allow you to abort the install. Once you see ${YELLOW}THE POINT OF NO RETURN${WHITE} you need to finish the install or your node may be left in a non-functioning state. If you have any questions or concerns, reach out to the community in telegram before proceeding. This installer is meant to replace the linux guides and should make things easier. Feedback is always welcome @pencekey." | fold -s
+This installer will walk you through a few different types of installations. There are several steps that require confirmation before any files or data will be modified. Pressing Ctrl+C will halt the install any time before the ${YELLOW}POINT OF NO RETURN${WHITE}. You will also have several prompts that allow you to abort the install. Once you see the ${YELLOW}POINT OF NO RETURN${WHITE} you need to finish the install or your node may be left in a non-functioning state. If you have any questions or concerns, reach out to the community in telegram before proceeding. This installer is meant to replace the linux guides and should make things easier. Feedback is always welcome @pencekey." | fold -s
 lb
 read -rsp 'Press [Enter] key to continue...'
 clear
@@ -75,7 +75,8 @@ lb
 echo "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This option will also replace your chaindata with the snapshot from block 1405031. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to keep your existing chaindata, please restart this installer and choose the correct option." | fold -s
 lb
 confirm "${WHITE}Would you like to proceed? [y/n]${RES}"
-existingInstall=( $(find / -name gman ! -type d) )
+findGman=( $(find / -name gman ! -type d) )
+existingInstall=( $(echo "$(dirname -- "$findGman")" ) )
 existingInstallPath="${WHITE}Please confirm your current masternode install path:${RES}"
 lb
 PS3="$existingInstallPath "
@@ -96,7 +97,7 @@ select gmanPath in "${existingInstall[@]}" "${RED}Abort Install${RES}" ; do
 	echo -e "${RED}WARNING:${WHITE} This will erase your existing chaindata and replace it with the 1405031 snapshot${RES}"
 	lb
 	echo -e "You will need to sync from snapshot block 1405031 if you continue."
-	echo -e "If you would like to ${WHITE}ONLY${RES} update your gman files and keep your existing chaindata restart setup and choose option 3 instead" | fold -s
+	echo -e "If you would like to ${WHITE}ONLY${RES} update your gman files and keep your existing chaindata, restart the setup, and choose option 3 instead." | fold -s
 	dline
 	echo -e "${RED}This will also stop your node if it is still running${RES}"
 	sleep 1
@@ -121,8 +122,11 @@ select gmanPath in "${existingInstall[@]}" "${RED}Abort Install${RES}" ; do
 	rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
 	mv $gmanPath/chaindata/keystore $gmanPath/keystore
 	rm -rf $gmanPath/chaindata $gmanPath/snapdir
+	lb
 	wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $gmanPath/1405031.tar.gz && tar -zxvf $gmanPath/1405031.tar.gz -C $gmanPath/
+	lb
         wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
+	lb
         wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
 	mv $gmanPath/keystore $gmanPath/chaindata/keystore
 	rm $gmanPath/1405031.tar.gz
@@ -132,13 +136,17 @@ select gmanPath in "${existingInstall[@]}" "${RED}Abort Install${RES}" ; do
 	echo "Please enter your wallet B address to create startup script"
 	read manWallet
 	# Create start script and set an alias so it will run from any path
-        echo -e "if [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
-        echo -e "alias gmanMatrix=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
+        echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
+        echo -e "alias gman=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
         source ~/.bashrc
         clear
+	echo -en "${CGREEN}"
         curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
         lb
-        echo "You can now type gmanMatrix from anywhere to start your node"
+        echo -en "${CWHITE}"
+        echo "Please type ${RED}bash${WHITE} and hit enter to load your custom script"
+        lb
+        echo "${RES}After running ${RED}bash${RES}, you can now type ${RED}gman${RES} from any path to start your node"
 	break
     else
 	echo "Invalid option. Please try again."
@@ -155,7 +163,8 @@ lb
 echo "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This verion will not replace your chaindata with the snapshot. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to use the snapshot, please restart this installer and choose the correct option." | fold -s
 lb
 confirm "${WHITE}Would you like to proceed? [y/n]${RES}"
-existingInstall=( $(find / -name gman ! -type d) )
+findGman=( $(find / -name gman ! -type d) )
+existingInstall=( $(echo "$(dirname -- "$findGman")" ) )
 existingInstallPath="${WHITE}Please confirm your current masternode install path:${RES}"
 lb
 PS3="$existingInstallPath "
@@ -193,21 +202,30 @@ select gmanPath in "${existingInstall[@]}" "${RED}Abort Install${RES}" ; do
         echo "Downloading and install files..."
         sleep 2
         rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
+	lb
         wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
+	lb
         wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
         clear
         banner
         lb
+	echo -en "${CWHITE}"
         echo "Please enter your wallet B address to create startup script"
+	echo -en "${CRES}"
         read manWallet
         # Create start script and set an alias so it will run from any path
-        echo -e "if [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
-        echo -e "alias gmanMatrix=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
+        echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
+        echo -e "alias gman=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
         source ~/.bashrc
         clear
+	echo -en "${CGREEN}"
         curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
         lb
-        echo "You can now type gmanMatrix from anywhere to start your node"
+        echo -en "${CWHITE}"
+        echo "Please type ${RED}bash${WHITE} and hit enter to load your custom script"
+        lb
+        echo "${RES}After running ${RED}bash${RES}, you can now type ${RED}gman${RES} from any path to start your node"
+	lb
         break
     else
         echo "Invalid option. Please try again."
@@ -265,8 +283,11 @@ select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
 	echo "Downloading and installing files..."
 	echo "${YELLOW}POINT OF NO RETURN${RES}"
 	sleep 2
+	lb
 	wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrix/1405031.tar.gz && tar -zxvf $matrixPath/matrix/1405031.tar.gz -C $matrixPath/matrix/
+	lb
         wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $matrixPath/matrix/gman && chmod a+x /$matrixPath/matrix/gman
+	lb
         wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $matrixPath/matrix/MANGenesis.json
 	mkdir $matrixPath/matrix/chaindata/keystore
 	rm $matrixPath/matrix/1405031.tar.gz
@@ -275,23 +296,33 @@ select matrixPath in "${newInstall[@]}" "${RED}Abort Install${RES}" ; do
 	lb
 	echo "Creating entrust.json file..."
 	lb
-	echo "Note: Please choose a different password than your Wallet B password"
-	sleep 1
+	echo "${WHITE}This password is the password used for starting your node. It should be different than the password you use to unlock your wallet in the wallet app. Please choose a password that is different than the password used to unlock your wallet A or wallet B in the wallet app." | fold -s
+	echo -en "${CRED}"
 	lb
-	read -ps "	Press [Return] if you understand"
+	read -rsp '	Press [Return] if you understand'
+	echo -en "${CRES}"
+	lb
 	$matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata aes --aesin $matrixPath/matrix/signAccount.json --aesout $matrixPath/matrix/entrust.json
 	rm $matrixPath/matrix/signAccount.json
+	lb
+	echo -en "${CWHITE}"
 	echo "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below, then press enter"
+	echo -en "${CRES}"
 	read matrixKeystore
 	echo "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/wallet.file
-	echo -e "if [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanRunScript.sh
+	echo -e "#!/bin/bash\ncd $matrixPath/matrix\nif [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanRunScript.sh
 	chmod 775 $matrixPath/matrix/gmanRunScript.sh
-	echo "alias gmanMatrix=/$matrixPath/gmanRunScript.sh" >> ~/.bashrc
+	echo "alias gman=/$matrixPath/matrix/gmanRunScript.sh" >> ~/.bashrc
 	source ~/.bashrc
 	clear
+	echo -en "${CGREEN}"
 	curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
 	lb
-	echo "You can now type gmanMatrix from any path to start your node"
+	echo -en "${CWHITE}"
+	echo "Please type ${RED}bash${WHITE} and hit enter to load your custom script"
+	lb
+	echo "${RES}After running ${RED}bash${RES}, you can now type ${RED}gman${RES} from any path to start your node"
+	lb
 	break
     else
         echo "Invalid option. Try again."
@@ -337,7 +368,7 @@ select gmanPath in "${existingDocker[@]}" "Abort Install" ; do
         echo "Please enter your wallet B address to create startup script"
         read manWallet
         echo -e "if [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
-        echo -e "alias gmanMatrix=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
+        echo -e "alias gman=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
         source ~/.bashrc
         clear
         curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
