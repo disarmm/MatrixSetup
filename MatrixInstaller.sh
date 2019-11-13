@@ -54,7 +54,7 @@ clear
 banner
 sleep 2
 lb
-echo "This installer will help you install your Matrix Node to any hard drive partition that has ${RED}at least 50 GB of free space.${RES}" | fold -s
+echo "This installer will help you install your Matrix Node to any hard drive partition that has ${RED}at least 40 GB of free space.${RES}" | fold -s
 lb
 echo "${RED}PLEASE READ EVERY PROMPT CAREFULLY TO AVOID DATA LOSS${RES}"
 lb
@@ -241,7 +241,7 @@ lb
 echo "This installation type will install your matrix mining node as a standalone node starting with the snapshot at block 1405031. With this installation type, you will not be able to run multiple nodes on this machine. If you would like to run multiple nodes now, or think you might in the future, it is best to start over and choose the new docker node setup." | fold -s
 lb
 confirm "${WHITE}Would you like to proceed? [y/n]${RES}"
-newInstall=( $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 >= 50 {print}' | awk '$4 !~/M/ {print}' | awk 'length($4) >= 4 {print}' | awk '{print $6}') )
+newInstall=( $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 >= 40 {print}' | awk '$4 !~/M/ {print}' | awk 'length($4) >= 4 {print}' | awk '{print $6}') )
 newInstallPath="${WHITE}Select a path to install your new Matrix Node:${RES}"
 lb
 PS3="$newInstallPath "
