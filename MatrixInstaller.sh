@@ -335,50 +335,50 @@ updateDocker()
 existingDocker=( $(find / -name gman ! -type d) )
 existingDockerPath="Please confirm your current masternode install path:"
 lb
-PS3="$existingDockerPath "
-select gmanPath in "${existingDocker[@]}" "Abort Install" ; do
-    if (( REPLY == 1 + ${#existingDocker[@]} )) ; then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#existingDocker[@]} )) ; then
-        lb
-        echo "You have selected to update..."
-        echo $gmanPath
-        lb
-        pause 'If this is correct, press [Enter] to confirm, or Ctrl+C to abort installation'
-        lb
-        echo "WARNING: This will erase your existing chaindata and replace it with the 1405031 snapshot"
-        dline
-        echo "This will also stop your node if it is still running"
-        sleep 1
-        pause '    Press [Enter] again to confirm or Ctrl+C to abort'
-        lb
-        kill -9 $(pgrep gman)
-        echo "Downloading and install files..."
-        sleep 2
-        rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
-        mv $gmanPath/chaindata/keystore $gmanPath/keystore
-        rm -rf $gmanPath/chaindata $gmanPath/snapdir
-        wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $gmanPath/1405031.tar.gz && tar -zxvf $gmanPath/1405031.tar.gz -C $gmanPath/
-        wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
-        wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
-        mv $gmanPath/keystore $gmanPath/chaindata/keystore
-        clear
-        banner
-        lb
-        echo "Please enter your wallet B address to create startup script"
-        read manWallet
-        echo -e "if [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
-        echo -e "alias gman=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
-        source ~/.bashrc
-        clear
-        curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
-        lb
-        echo "You can now type gmanMatrix from any path to start your node"
-        break
-    else
-        echo "Invalid option. Please try again."
-    fi
-done
+#PS3="$existingDockerPath "
+#select gmanPath in "${existingDocker[@]}" "Abort Install" ; do
+#    if (( REPLY == 1 + ${#existingDocker[@]} )) ; then
+#        exit
+#    elif (( REPLY > 0 && REPLY <= ${#existingDocker[@]} )) ; then
+#        lb
+#        echo "You have selected to update..."
+#        echo $gmanPath
+#        lb
+#        pause 'If this is correct, press [Enter] to confirm, or Ctrl+C to abort installation'
+#        lb
+#        echo "WARNING: This will erase your existing chaindata and replace it with the 1405031 snapshot"
+#        dline
+#        echo "This will also stop your node if it is still running"
+#        sleep 1
+#        pause '    Press [Enter] again to confirm or Ctrl+C to abort'
+#        lb
+#        kill -9 $(pgrep gman)
+#        echo "Downloading and install files..."
+#        sleep 2
+#        rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
+#        mv $gmanPath/chaindata/keystore $gmanPath/keystore
+#        rm -rf $gmanPath/chaindata $gmanPath/snapdir
+#        wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $gmanPath/1405031.tar.gz && tar -zxvf $gmanPath/1405031.tar.gz -C $gmanPath/
+#        wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
+#        wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
+#        mv $gmanPath/keystore $gmanPath/chaindata/keystore
+#        clear
+#        banner
+#        lb
+#        echo "Please enter your wallet B address to create startup script"
+#        read manWallet
+#        echo -e "if [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanRunScript.sh
+#        echo -e "alias gman=/$gmanPath/gmanRunScript.sh" >> ~/.bashrc
+#        source ~/.bashrc
+#        clear
+#        curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
+#        lb
+#        echo "You can now type gmanMatrix from any path to start your node"
+#        break
+#    else
+#        echo "Invalid option. Please try again."
+#    fi
+#done
 }
 
 newDocker()
@@ -386,63 +386,63 @@ newDocker()
 newDocker=( $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 >= 150 {print}' | awk '$4 !~/M/ {print}' | awk 'length($4) >= 4 {print}' | awk '{print $6}') )
 newDockerPath="Select a path to install your new Matrix Node:"
 lb
-PS3="$newDockerPath "
-select matrixPath in "${newDocker[@]}" "Abort Install" ; do
-    if (( REPLY == 1 + ${#newDocker[@]} )) ; then
-        exit
-
-    elif (( REPLY > 0 && REPLY <= ${#newDocker[@]} )) ; then
-        lb
-        echo  "You have selected to install to..."
-        df -h $matrixPath | sed -n '2 p'
-        lb
-        pause 'If this is correct, press [Enter] to confirm, or Ctrl+C to abort installation'
-        mkdir -p $matrixPath/matrix/
-        lb
-        echo "Creating SignAccount.json file..."
-        lb
-        echo "Please enter your wallet B address"
-        read manWallet
-        lb
-        echo "WARNING: YOUR WALLET B PASSWORD SHOULD BE DIFFERENT THAN YOUR WALLET A PASSWORD"
-        lb
-        echo "If your wallet B and wallet A password are the same, please abort with Ctrl+C and create a new wallet B"
-        lb
-        echo "Please enter your wallet B password"
-        read manPasswd
-        echo -e '[\n{\n"Address":"'$manWallet'",\n"Password":"'$manPasswd'"\n}\n]' > $matrixPath/matrix/signAccount.json
-        lb
-        echo "Downloading and installing files..."
-        sleep 2
-        wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrix/1405031.tar.gz && tar -zxvf $matrixPath/matrix/1405031.tar.gz -C $matrixPath/matrix/
-        wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $matrixPath/matrix/gman && chmod a+x /$matrixPath/matrix/gman
-        wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $matrixPath/matrix/MANGenesis.json
-        mkdir $matrixPath/matrix/chaindata/keystore
-        clear
-        banner
-        lb
-        echo "Creating entrust.json file..."
-        lb
-        echo "Note: Please choose a different password than your Wallet B password"
-        sleep 1
-        lb
-        pause '         Press [Return] to continue]'
-        $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata aes --aesin $matrixPath/matrix/signAccount.json --aesout $matrixPath/matrix/entrust.json
-        echo "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below"
-        read matrixKeystore
-        echo -e "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/wallet.file
-        echo -e "if [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanRunScript.sh
-        echo -e "alias gmanMatrix=/$matrixPath/gmanRunScript.sh" >> ~/.bashrc
-        source ~/.bashrc
-        clear
-        curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
-        lb
-        echo "Type gmanMatrix to start your new node"
-        break
-    else
-        echo "Invalid option. Try again."
-    fi
-done
+#PS3="$newDockerPath "
+#select matrixPath in "${newDocker[@]}" "Abort Install" ; do
+#    if (( REPLY == 1 + ${#newDocker[@]} )) ; then
+#        exit
+#
+#    elif (( REPLY > 0 && REPLY <= ${#newDocker[@]} )) ; then
+#        lb
+#        echo  "You have selected to install to..."
+#        df -h $matrixPath | sed -n '2 p'
+#        lb
+#        pause 'If this is correct, press [Enter] to confirm, or Ctrl+C to abort installation'
+#        mkdir -p $matrixPath/matrix/
+#        lb
+#        echo "Creating SignAccount.json file..."
+#        lb
+#        echo "Please enter your wallet B address"
+#        read manWallet
+#        lb
+#        echo "WARNING: YOUR WALLET B PASSWORD SHOULD BE DIFFERENT THAN YOUR WALLET A PASSWORD"
+#        lb
+#        echo "If your wallet B and wallet A password are the same, please abort with Ctrl+C and create a new wallet B"
+#        lb
+#        echo "Please enter your wallet B password"
+#        read manPasswd
+#        echo -e '[\n{\n"Address":"'$manWallet'",\n"Password":"'$manPasswd'"\n}\n]' > $matrixPath/matrix/signAccount.json
+#        lb
+#        echo "Downloading and installing files..."
+#        sleep 2
+#        wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrix/1405031.tar.gz && tar -zxvf $matrixPath/matrix/1405031.tar.gz -C $matrixPath/matrix/
+#        wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $matrixPath/matrix/gman && chmod a+x /$matrixPath/matrix/gman
+#        wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $matrixPath/matrix/MANGenesis.json
+#        mkdir $matrixPath/matrix/chaindata/keystore
+#        clear
+#        banner
+#        lb
+#        echo "Creating entrust.json file..."
+#        lb
+#        echo "Note: Please choose a different password than your Wallet B password"
+#        sleep 1
+#        lb
+#        pause '         Press [Return] to continue]'
+#        $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata aes --aesin $matrixPath/matrix/signAccount.json --aesout $matrixPath/matrix/entrust.json
+#        echo "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below"
+#        read matrixKeystore
+#        echo -e "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/wallet.file
+#        echo -e "if [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanRunScript.sh
+#        echo -e "alias gmanMatrix=/$matrixPath/gmanRunScript.sh" >> ~/.bashrc
+#        source ~/.bashrc
+#        clear
+#        curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/completedBanner
+#        lb
+#        echo "Type gmanMatrix to start your new node"
+#        break
+#    else
+#        echo "Invalid option. Try again."
+#    fi
+#done
 }
 
 standaloneUpdatePrompt()
