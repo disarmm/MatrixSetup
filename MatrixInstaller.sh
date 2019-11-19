@@ -241,7 +241,7 @@ cp $gmanPath/gmanRunScript.sh /usr/local/bin/gmanClient
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 20 80
 }
 manChoice=$(
-whiptail --title "Matrix AI Network Installer" --menu "How do you like your man?" 20 90 8 \
+whiptail --title "Matrix AI Network Installer" --menu "How do you like your MAN?" 20 90 8 \
 	'1)' "Standalone - New intall with latest snapshot" \
 	'2)' "Standalone - Upgrade current install with snapshot" \
 	'3)' "Standalone - Upgrade current install without snapshot" \
