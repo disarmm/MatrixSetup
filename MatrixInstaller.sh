@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root or use sudo"
+  exit
+fi
 
 #set script to exit on any errors
 set -e
