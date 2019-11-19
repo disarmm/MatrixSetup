@@ -11,6 +11,11 @@ LBLUE=$(echo -en '\001\033[01;34m\002')
 pause(){
 	read -p "$*"
 }
+banner(){
+        echo ${LBLUE}
+        curl https://raw.githubusercontent.com/disarmm/MatrixSetup/master/banner
+        echo ${RES}
+}
 lb(){
 	printf "\n"
 }
