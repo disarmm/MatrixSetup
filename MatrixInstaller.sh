@@ -300,10 +300,10 @@ case $manChoice in
 		newStandalone
 		;;
 	"2)")
-		standaloneSnapshot
+		updateStandaloneSnapshot
 		;;
 	"3)")
-		standaloneOnlyGman
+		updateStandaloneOnlyGman
 		;;
 	"4)")
 		echo "Docker Installs Coming Soon"
