@@ -184,7 +184,7 @@ whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Com
 }
 
 # Fucntion for updating standalone installations WITHOUT using the snapshot
-updateStandaloneOnlyGman()
+standaloneOnlyGman()
 {
 clear
 whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This verion will not replace your chaindata with the snapshot. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to use the snapshot, please restart this installer and choose the correct option." 14 100
@@ -202,7 +202,7 @@ if [ ${exitStatus} = 0 ]; then
         if (whiptail --title "Confirmation" --yesno "You have chosen to update \n\n${installedPath} \n\nAre you sure?" 18 90 20); then
                 :
 	else
-		updateStandalongOnlyGman
+		standalongOnlyGman
         fi
 fi
 gmanPath=( $(echo "$(dirname -- "$installedPath")" ) )
