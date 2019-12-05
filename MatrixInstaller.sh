@@ -217,7 +217,7 @@ if [ ${exitStatus} = 0 ]; then
         if (whiptail --title "Confirmation" --yesno "You have chosen to update \n\n${installedPath} \n\nAre you sure?" 18 90 20); then
                 :
 	else
-		updateStandalongOnlyGman
+		updateStandaloneOnlyGman
         fi
 fi
 gmanPath=( $(echo "$(dirname -- "$installedPath")" ) )
