@@ -28,7 +28,7 @@ banner(){
 lb(){
 	printf "\n"
 }
-confirm (){
+confirm(){
 	if (whiptail --title "Confirmation" --yesno "Please confirm you wish to continue" 8 75); then
 		:
 	else
@@ -108,7 +108,7 @@ updateStandaloneSnapshot()
 {
 whiptail --title "Matrix AI Network Installer" --msgbox "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This option will also replace your chaindata with the snapshot from block 1405031. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to keep your existing chaindata, please restart this installer and choose the correct option." 14 100
 confirm
-findGman=( $(find / -name gman ! -type d) )
+# add something that checks to see if it can find gman and then give an error that it couldn't find it
 i=0
 W=()
 while read -r line; do
