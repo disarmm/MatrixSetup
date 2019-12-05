@@ -158,13 +158,29 @@ sleep 2
 clear
 banner
 lb
-echo "Downloading and install files..."
+echo "Cleaning up old files..."
 sleep 2
-# clean up old files
-rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
+lb
+# clean up old files if they exist
+if [ -f "${gmanPath}"/gman ]; then
+        echo "Removing gman" && rm $gmanPath/gman
+fi
+if [ -f "${gmanPath}"/MANGenesis.json ]; then
+        echo "Removing MANGenesis.json" && rm $gmanPath/MANGenesis.json
+fi
+if [ -f "${gmanPath}"/firstRun ]; then
+        echo "Removing firstRun" && rm $gmanPath/firstRun
+fi
+lb
+echo "Backing up keystore..."
 mv $gmanPath/chaindata/keystore $gmanPath/keystore
+lb
+echo "Removing old chaindata..."
 rm -rf $gmanPath/chaindata $gmanPath/snapdir
 # download new files
+lb
+echo "Downloading new files..."
+sleep 2
 lb
 wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $gmanPath/1405031.tar.gz && tar -zxvf $gmanPath/1405031.tar.gz -C $gmanPath/
 lb
@@ -184,7 +200,7 @@ whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Com
 }
 
 # Fucntion for updating standalone installations WITHOUT using the snapshot
-standaloneOnlyGman()
+updateStandaloneOnlyGman()
 {
 clear
 whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This verion will not replace your chaindata with the snapshot. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to use the snapshot, please restart this installer and choose the correct option." 14 100
@@ -202,7 +218,7 @@ if [ ${exitStatus} = 0 ]; then
         if (whiptail --title "Confirmation" --yesno "You have chosen to update \n\n${installedPath} \n\nAre you sure?" 18 90 20); then
                 :
 	else
-		standalongOnlyGman
+		updateStandalongOnlyGman
         fi
 fi
 gmanPath=( $(echo "$(dirname -- "$installedPath")" ) )
@@ -238,10 +254,21 @@ sleep 2
 clear
 banner
 lb
-echo "Downloading and install files..."
+echo "Cleaning up old files..."
 sleep 2
-# clean up old files
-rm $gmanPath/gman $gmanPath/MANGenesis.json $gmanPath/firstRun
+lb
+# clean up old files if they exist
+if [ -f "${gmanPath}"/gman ]; then
+        echo "removing gman" && rm $gmanPath/gman
+fi
+if [ -f "${gmanPath}"/MANGenesis.json ]; then
+        echo "removing MANGenesis.json" && rm $gmanPath/MANGenesis.json
+fi
+if [ -f "${gmanPath}"/firstRun ]; then
+	echo "removing firstRun" && rm $gmanPath/firstRun
+fi
+lb
+echo "Downloading new files..."
 # download new files
 lb
 wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
