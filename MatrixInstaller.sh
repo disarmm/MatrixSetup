@@ -148,11 +148,10 @@ else
         exit 1
 fi
 # check if gman is stopped
-if [ -z "$(pgrep gman)" ]
-then
-echo "gman is stopped"
+if [ -z "$(pgrep gman)" ]; then
+        echo "gman is stopped"
 else
-echo "gman is still running" && lb && echo "Killing gman" && kill -9 $(pgrep gman)
+        echo "gman is still running" && lb && echo "Killing gman" && kill -9 $(pgrep gman)
 fi
 sleep 2
 clear
@@ -229,26 +228,11 @@ else
         echo >&@ "INSTALLATION ABORTED!!"
         exit 1
 fi
-# confirm
-if (whiptail --title "Confirmation" --yesno "Are you sure you would like to delete your chaindata and continue with the snapshot?" 8 75); then
-        :
-else
-        echo >&2 "INSTALLATION ABORTED!!"
-        exit 1
-fi
-# confirm again
-if (whiptail --title "Confirmation" --yesno "Seriously, this deletes your current chaindata. Are you 100% sure you would like to continue?" 8 75); then
-        :
-else
-        echo >&2 "INSTALLATION ABORTED!!"
-        exit 1
-fi
 # check if gman is stopped
-if [ -z "$(pgrep gman)" ]
-then
-echo "gman is stopped"
+if [ -z "$(pgrep gman)" ]; then
+	echo "gman is stopped"
 else
-echo "gman is still running" && lb && echo "Killing gman" && kill -9 $(pgrep gman)
+	echo "gman is still running" && lb && echo "Killing gman" && kill -9 $(pgrep gman)
 fi
 sleep 2
 clear
