@@ -58,12 +58,15 @@ if [ ${exitStatus} = 0 ]; then
         if (whiptail --title "Confirmation" --yesno "You have chosen to install to \n\n${matrixPath}/matrix\n\n$(df -h ${matrixPath}) \n\nAre you sure?" 18 90 20); then
                 :
         else
-                newStandalone
+                whiptail --title "Matrix AI Network Installer" --msgbox "Installation is restarting..." 12 80 && newStandalone
         fi
+fi
+if [ -d ${matrixPath}/matrix ]; then
+	whiptail --title "WARNING" --msgbox "${matrixPath}/matrix path already exists, please choose different path or installation type" 12 80 && newStandalone
 fi
 # create signAccount file
 manWallet=$(whiptail --title "Creating signAccount.json file..." --inputbox "Please enter your wallet B address" 12 80 3>&1 1>&2 2>&3)
-whiptail --title "WARNING" --msgbox "YOUR WALLET B PASSWORD SHOULD BE DIFFERENT THAN YOUR WALLET A PASSWORD" 12 80
+whiptail --title "Creating signAccount.json file..." --msgbox "You are about to enter your Wallet B password. This is the password used to unlock your wallet.\n\nYOUR WALLET B PASSWORD SHOULD BE DIFFERENT THAN YOUR WALLET A PASSWORD" 12 80
 manPasswd=$(whiptail --title "Creating signAccount.json file..." --inputbox "This password is stored only in your signAccount.json file, which is deleted after your entrust file is created.\n\nPlease enter your wallet B password" 12 80 3>&1 1>&2 2>&3)
 mkdir -p $matrixPath/matrix/
 echo -e '[\n{\n"Address":"'$manWallet'",\n"Password":"'$manPasswd'"\n}\n]' > $matrixPath/matrix/signAccount.json
@@ -83,7 +86,7 @@ lb
 mkdir $matrixPath/matrix/chaindata/keystore
 rm $matrixPath/matrix/1405031.tar.gz
 # create encrypted entrust file
-whiptail --title "Creating entrust.json file..." --msgbox "This password is the password used for starting your node. It should be different than the password you use to unlock your wallet in the wallet app. Please choose a password that is different than the password used to unlock your wallet A or wallet B in the wallet app." 12 80
+whiptail --title "Creating entrust.json file..." --msgbox "On the next page you will be creating the password used to start your node. It should be different than the password you use to unlock your wallet in the wallet app. Please choose a password that is different than the password used to unlock your wallet A or wallet B in the wallet app." 12 80
 # running gman command to create entrust file
 clear
 banner
@@ -101,7 +104,7 @@ chmod 775 $matrixPath/matrix/gmanClient.sh
 # copy start script
 cp $matrixPath/matrix/gmanClient.sh /usr/local/bin/gmanClient
 # finished!
-whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 20 80
+whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 12 80
 }
 
 updateStandaloneSnapshot()
@@ -162,13 +165,13 @@ sleep 2
 lb
 # clean up old files if they exist
 if [ -f "${gmanPath}"/gman ]; then
-        echo "Removing gman" && rm $gmanPath/gman
+        echo "Removing gman..." && sleep 1 && rm $gmanPath/gman
 fi
 if [ -f "${gmanPath}"/MANGenesis.json ]; then
-        echo "Removing MANGenesis.json" && rm $gmanPath/MANGenesis.json
+        echo "Removing MANGenesis.json..." && sleep 1 && rm $gmanPath/MANGenesis.json
 fi
 if [ -f "${gmanPath}"/firstRun ]; then
-        echo "Removing firstRun" && rm $gmanPath/firstRun
+        echo "Removing firstRun..." && sleep 1 && rm $gmanPath/firstRun
 fi
 lb
 echo "Backing up keystore..."
@@ -195,7 +198,7 @@ chmod 755 $gmanPath/gmanClient.sh
 # copy start script
 cp $gmanPath/gmanClient.sh /usr/local/bin/gmanClient
 # finished!
-whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 20 80
+whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 12 80
 }
 
 # Fucntion for updating standalone installations WITHOUT using the snapshot
@@ -243,13 +246,13 @@ sleep 2
 lb
 # clean up old files if they exist
 if [ -f "${gmanPath}"/gman ]; then
-        echo "removing gman" && rm $gmanPath/gman
+        echo "removing gman..." && sleep 1 && rm $gmanPath/gman
 fi
 if [ -f "${gmanPath}"/MANGenesis.json ]; then
-        echo "removing MANGenesis.json" && rm $gmanPath/MANGenesis.json
+        echo "removing MANGenesis.json..." && sleep 1 && rm $gmanPath/MANGenesis.json
 fi
 if [ -f "${gmanPath}"/firstRun ]; then
-	echo "removing firstRun" && rm $gmanPath/firstRun
+	echo "removing firstRun..." && sleep 1 && rm $gmanPath/firstRun
 fi
 lb
 echo "Downloading new files..."
@@ -265,7 +268,7 @@ chmod 755 $gmanPath/gmanClient.sh
 # copy start script
 cp $gmanPath/gmanClient.sh /usr/local/bin/gmanClient
 # finished!
-whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 20 80
+whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Complete!\n\nYou can type gmanClient from any path and your Matrix node will start magically" 12 80
 }
 manChoice=$(
 whiptail --title "Matrix AI Network Installer" --menu "How do you like your MAN?" 20 90 8 \
