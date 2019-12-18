@@ -116,13 +116,14 @@ if [ $(find / -name gman ! -type d | wc -l) -eq 0 ]; then
         whiptail --title "ERROR" --msgbox "The installer cannot find any previous installations. Please install using option 1 or contact @pencekey for help on telegram"
         exit 1
 fi
-# add something that checks to see if it can find gman and then give an error that it couldn't find it
+echo "Searching for previous installations. Please wait..."
 i=0
 W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
 done < <( find / -name gman ! -type d )
+clear
 IPATH=$(whiptail --title "Matrix AI Network - Installer" --menu "The following paths have been identified as previous installations.\n\nPlease select the Matrix path you would like to update" 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
@@ -217,12 +218,14 @@ if [ $(find / -name gman ! -type d | wc -l) -eq 0 ]; then
 	whiptail --title "ERROR" --msgbox "The installer cannot find any previous installations. Please install using option 1 or contact @pencekey for help on telegram"
 	exit 1
 fi
+echo "Searching for previous installations. Please wait..."
 i=0
 W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
 done < <( find / -name gman ! -type d )
+clear
 IPATH=$(whiptail --title "Matrix AI Network - Installer" --menu "The following paths have been identified as previous installations.\n\nPlease select the Matrix path you would like to update" 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
@@ -260,9 +263,6 @@ if [ -f "${gmanPath}"/gman ]; then
 fi
 if [ -f "${gmanPath}"/MANGenesis.json ]; then
         echo "removing MANGenesis.json..." && sleep 1 && rm $gmanPath/MANGenesis.json
-fi
-if [ -f "${gmanPath}"/firstRun ]; then
-	echo "removing firstRun..." && sleep 1 && rm $gmanPath/firstRun
 fi
 lb
 echo "Downloading new files..."
