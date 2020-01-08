@@ -68,20 +68,20 @@ fi
 lb
 echo "Downloading and installing matrix files..."
 lb
-wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrixDocker/$containerName/1405031.tar.gz && tar -zxvf $matrixPath/matrixDocker/$containerName/1405031.tar.gz -C $matrixPath/matrixDocker/$containerName/
-lb
 mkdir $matrixPath/matrixDocker/$containerName/keystore
-mv $matrixPath/matrixDocker/$containerName/chaindata/gman $matrixPath/matrixDocker/$containerName/
-rm $matrixPath/matrixDocker/$containerName/MANGenesis.json
-#mv $matrixPath/matrixDocker/$containerName/chaindata/picstore $matrixPath/matrixDocker/$containerName/
-#rm -rf $matrixPath/matrixDocker/$containerName/chaindata
-#rm $matrixPath/matrixDocker/$containerName/1405031.tar.gz
+mkdir $matrixPath/matrixDocker/$containerName/snapdir
+wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrixDocker/$containerName/1784250.tar.gz && tar -zxvf $matrixPath/matrixDocker/$containerName/1784250.tar.gz -C $matrixPath/matrixDocker/$containerName/snapdir
+lb
+rm $matrixPath/matrixDocker/$containerName/1784250.tar.gz
 
 
 #rm $matrixPath/matrixDocker/$containerName/1405031.tar.gz
 # create keystore wallet file
 matrixKeystore=$(whiptail --title "Creating wallet B keystore file..." --inputbox "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below" 12 80 3>&1 1>&2 2>&3)
 echo "$matrixKeystore" > $matrixPath/matrixDocker/$containerName/keystore/${manWallet}
+docker pull disarmm/matrix
+lb
+docker run -d -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/matrixDocker/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
 # finished!
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installation Complete!\n\n" 12 80
 }
