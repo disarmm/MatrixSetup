@@ -36,7 +36,11 @@ confirm(){
         	exit 1
     	fi
 }
+nameContainer(){
+containerName=$(whiptail --title "Matrix AI Network Installer" --inputbox "Please choose a name for your container" 12 80 3>&1 1>&2 2>&3)
+}
 
+# intro stuff
 whiptail --title "Matrix AI Network Installer" --msgbox "This installer will help you install your Matrix Node to any hard drive partition that has at least 100 GB of free space." 8 65
 whiptail --title "Matrix AI Network Installer" --msgbox "PLEASE READ EVERY PROMPT CAREFULLY TO AVOID DATA LOSS" 8 57
 whiptail --title "Matrix AI Network Installer" --msgbox "This installer will walk you through a few different types of installations. There are several steps that require confirmation before any files or data will be modified. Pressing [Esc] will halt the install and you will have several prompts that allow you to abort the install. If you have any questions or concerns, reach out to the community in telegram before proceeding. This installer is meant to replace the linux guides and should make things easier. Feedback is always welcome @pencekey on telegram." 14 100
@@ -351,7 +355,7 @@ whiptail --title "Matrix AI Network Installer" --menu "How do you like your MAN?
 	'1)' "Standalone - New intall with latest snapshot" \
 	'2)' "Standalone - Upgrade current install with snapshot" \
 	'3)' "Standalone - Upgrade current install without snapshot" \
-	'4)' "Docker - New install with snapshot(coming soon)" \
+	'4)' "Docker - New install with latest snapshot" \
 	'5)' "Docker - Upgrade current install with snapshot(coming soon)" \
 	'6)' "Docker - Upgrade current install without snapshot(coming soon)" \
 	'7)' "Docker - Copy node" \
@@ -369,8 +373,7 @@ case $manChoice in
 		updateStandaloneOnlyGman
 		;;
 	"4)")
-		echo "Docker Installs Coming Soon"
-		exit
+		newDocker
 		;;
 	"5)")
                 echo "Docker Installs Coming Soon"
