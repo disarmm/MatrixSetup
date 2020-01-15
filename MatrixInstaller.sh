@@ -54,11 +54,11 @@ W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
-done < <( df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 !~/M/ {print}' | awk '0+$4 >= 75 {print}' | awk '{print $6}' )
+done < <( df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75000000 {print}' | awk '{print $6}' )
 ITYPE=$(whiptail --title "Choose an install path" --menu "Please choose an install path. These options all provide at least 75GB of free space for your masternode." 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
-        matrixPath=$(readlink -f $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 !~/M/ {print}' | awk '0+$4 >= 75 {print}' | awk '{print $6}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`") )
+        matrixPath=$(readlink -f $(df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75000000 {print}' | awk '{print $6}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`") )
         if (whiptail --title "Confirmation" --yesno "You have chosen to install to \n\n${matrixPath}/matrix\n\n$(df -h ${matrixPath}) \n\nAre you sure?" 18 90 20); then
                 :
         else
@@ -293,11 +293,11 @@ W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
-done < <( df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 !~/M/ {print}' | awk '0+$4 >= 75 {print}' | awk '{print $6}' )
+done < <( df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75000000 {print}' | awk '{print $6}' )
 ITYPE=$(whiptail --title "Choose an install path" --menu "Please choose an install path. These options all provide at least 75GB of free space for your masternode." 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
-        matrixPath=$(readlink -f $(df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 !~/M/ {print}' | awk '0+$4 >= 75 {print}' | awk '{print $6}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`") )
+        matrixPath=$(readlink -f $(df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75000000 {print}' | awk '{print $6}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`") )
         if (whiptail --title "Confirmation" --yesno "You have chosen to install to \n\n${matrixPath}/matrixDocker\n\n$(df -h ${matrixPath}) \n\nAre you sure?" 18 90 20); then
                 :
         else
