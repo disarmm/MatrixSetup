@@ -28,7 +28,7 @@ W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
-done < <( df -h | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '$4 !~/M/ {print}' | awk '0+$4 >= 75 {print}' | awk '{print $6}' )
+done < <( df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75 {print}' | awk '{print $6}' )
 ITYPE=$(whiptail --title "Choose an install path" --menu "Please choose an install path. These options all provide at least 75GB of free space for your masternode." 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
