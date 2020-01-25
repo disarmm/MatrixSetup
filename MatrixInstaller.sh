@@ -368,7 +368,7 @@ matrixKeystore=$(whiptail --title "Creating wallet B keystore file..." --inputbo
 echo "$matrixKeystore" > $matrixPath/matrixDocker/$containerName/keystore/${manWallet}
 docker pull disarmm/matrix
 lb
-docker run -d -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/matrixDocker/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
+docker run -d --restart unless-stopped -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/matrixDocker/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
 # finished!
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installation Complete!\n\n" 12 80
 }
@@ -457,7 +457,7 @@ echo "$matrixKeystore" > $matrixPath/$containerName/keystore/${manWallet}
 echo "Checking for container updates..."
 docker pull disarmm/matrix
 lb
-docker run -d -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
+docker run -d --restart unless-stopped -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
 # finished!
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installation Complete!\n\n" 12 80
 }
