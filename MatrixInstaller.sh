@@ -58,6 +58,20 @@ if [ ${exitStatus} = 0 ]; then
         fi
 fi
 }
+addMaint(){
+wget -O /usr/local/bin/nodeMaint https://raw.githubusercontent.com/disarmm/MatrixScripts/master/nodeMaint.sh
+chmod a+x /usr/local/bin/nodeMaint
+}
+storageCheck(){
+freeSpaceOptionCount=$(df | grep /dev/ | grep -v "100%" | grep -v "tmpfs" | awk '0+$4 >= 75000000 {print}' | awk '{print $6}' | wc -l)
+if [ ${freeSpaceOptionCount} = 0 ]; then
+	whiptail --title "Matrix AI Network Installer" --msgbox "You do not have at least 75GG free space available on a single device" 12 80
+	echo >&2 "INSTALLATION ABORTED!! Please check your available disk space."
+	exit 1
+else
+	:
+fi
+}
 
 # intro stuff
 whiptail --title "Matrix AI Network Installer" --msgbox "This installer will help you install your Matrix Node to any hard drive partition that has at least 100 GB of free space." 8 65
@@ -68,6 +82,7 @@ whiptail --title "Matrix AI Network Installer" --msgbox "This installer will wal
 newStandalone(){
 whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will install your matrix mining node as a standalone node starting with the snapshot at block 1405031. With this installation type, you will not be able to run multiple nodes on this machine. If you would like to run multiple nodes now, or think you might in the future, it is best to start over and choose the new docker node setup." 14 100
 confirm
+storageCheck
 i=0
 W=()
 while read -r line; do
@@ -162,7 +177,7 @@ gmanPath=( $(echo "$(dirname -- "$installedPath")" ) )
 if (whiptail --title "Matrix AI Network - Installer" --yesno "This will also stop your node if it is still running\n\nWould you like to proceed?" 12 80); then
         :
 else
-        echo >&@ "INSTALLATION ABORTED!!"
+        echo >&2 "INSTALLATION ABORTED!!"
         exit 1
 fi
 # confirm
@@ -307,6 +322,7 @@ newDocker(){
 whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will install your matrix mining node as a new docker container with the snapshot at block 1784250. With this installation type, you will be able to run multiple nodes on this machine. If you need to install multiple docker nodes, it is recommended to fully sync with one node and then use the Docker Copy option at the main menu." 14 100
 whiptail --title "Matrix AI Network - Installer" --msgbox "When naming your containers and selecting port numbers for each, it would be smart to organize them by name and port number. For example: matrix50501 for a container name and port 50501 for the port number. That way you will always know which container is associate with which port." 14 100
 confirm
+storageCheck
 i=0
 W=()
 while read -r line; do
@@ -369,6 +385,8 @@ echo "$matrixKeystore" > $matrixPath/matrixDocker/$containerName/keystore/${manW
 docker pull disarmm/matrix
 lb
 docker run -d --restart unless-stopped -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/matrixDocker/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
+# add nodeMaint script
+addMaint
 # finished!
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installation Complete!\n\n" 12 80
 }
@@ -377,11 +395,12 @@ copyDocker(){
 if [ -x "$(command -v docker)" ]; then
         :
 else
-        echo >&2 "Docker not installer, please choose new docker setup first"
+        echo >&2 "Docker not yet installed, please choose the 'Docker - New install with latest snapshot' setup first"
         exit 1
 fi
 whiptail --title "Matrix AI Network - Installer" --msgbox "This installer option will help you copy your chaindata from an existing container to a new container. You should fully sync your existing node before copying. If you haven't finished syncing, please select no on the next screen and finish syncing first. For more advanced options please choose the advanced docker copy option." 14 100
 confirm
+storageCheck
 whiptail --title "Matrix AI Network - Installer" --msgbox "FYI - When naming your containers and selecting port numbers for each, it would be smart to organize them by name and port number. For example: matrix50501 as a container name using port 50501 for the port number. That way you will always know which container is associate with which port. You CAN use any port, but stick to ports 50500-50600." 14 100
 # select which container to copy docker
 i=0
@@ -389,11 +408,11 @@ W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
-done < <( docker ps --format '{{.Names}}' )
+done < <( docker ps -a --format '{{.Names}}' )
 ITYPE=$(whiptail --title "Select docker to copy" --menu "Please choose a current docker container where you would like to copy data from." 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
-        currentDocker=$(docker ps --format '{{.Names}}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`")
+        currentDocker=$(docker ps -a --format '{{.Names}}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`")
         dockerMount=$(df -h $(docker inspect -f '{{ .Mounts }}' ${currentDocker} | awk {'print $2'}) | sed -n '2 p')
         if (whiptail --title "Confirmation" --yesno "You have chosen to copy from container:  ${currentDocker} \n\nLocated on the following device:\n${dockerMount} \n\nAre you sure?" 18 90 20); then
                 :
@@ -458,6 +477,8 @@ echo "Checking for container updates..."
 docker pull disarmm/matrix
 lb
 docker run -d --restart unless-stopped -e MAN_PORT=${portSelection} -p ${portSelection}:${portSelection} -v $matrixPath/$containerName:/matrix/chaindata --name $containerName disarmm/matrix
+# add nodeMaint script
+addMaint
 # finished!
 whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installation Complete!\n\n" 12 80
 }

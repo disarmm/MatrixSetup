@@ -53,11 +53,11 @@ W=()
 while read -r line; do
     let i=$i+1
     W+=($i "$line")
-done < <( docker ps -a --format '{{.Names}}' )
+done < <( docker ps --format '{{.Names}}' )
 ITYPE=$(whiptail --title "Select docker to copy" --menu "Please choose a current docker container where you would like to copy data from." 22 80 12 "${W[@]}" 3>&1 1>&2 2>&3)
 exitStatus=$?
 if [ ${exitStatus} = 0 ]; then
-        currentDocker=$(docker ps -a --format '{{.Names}}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`")
+        currentDocker=$(docker ps --format '{{.Names}}' | sed -n "`echo "$ITYPE p" | sed 's/ //'`")
 	dockerMount=$(df -h $(docker inspect -f '{{ .Mounts }}' ${currentDocker} | awk {'print $2'}) | sed -n '2 p')
 	if (whiptail --title "Confirmation" --yesno "You have chosen to copy from container:  ${currentDocker} \n\nLocated on the following device:\n${dockerMount} \n\nAre you sure?" 18 90 20); then
                 :
