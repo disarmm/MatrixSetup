@@ -77,7 +77,7 @@ if [ "$(docker pull disarmm/matrix | grep "Status: Image is up to date for disar
         echo >&2 "Your docker container is already up-to-date"
         exit 1
 else
-        echo "Container updated"
+        echo "Container image successfully updated"
 fi
 }
 isDockerInstalled(){
@@ -88,6 +88,7 @@ else
         exit 1
 fi
 }
+lb
 
 # intro stuff
 whiptail --title "Matrix AI Network Installer" --msgbox "This installer will help you install your Matrix Node to any hard drive partition that has at least 100 GB of free space." 8 65
@@ -571,19 +572,3 @@ case $manChoice in
                 exit
                 ;;
 esac
-checkForContainerUpdate(){
-	if [ "$(docker pull disarmm/matrix | grep "Status: Image is up to date for disarmm/matrix:latest" | wc -l)" -eq 0 ]; then
-		        echo >&2 "Your docker container is already up-to-date"
-			        exit 1
-			else
-				        echo "Container updated"
-				fi
-			}
-			isDockerInstalled(){
-				if [ -x "$(command -v docker)" ]; then
-					        :
-					else
-						        echo >&2 "Docker not installer, please choose new docker setup first"
-							        exit 1
-							fi
-						}
