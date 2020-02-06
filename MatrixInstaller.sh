@@ -73,7 +73,7 @@ else
 fi
 }
 checkForContainerUpdate(){
-if [ "$(docker pull disarmm/matrix | grep "Status: Image is up to date for disarmm/matrix:latest" | wc -l)" -eq 0 ]; then
+if [ "$(docker pull disarmm/matrix | grep "Status: Image is up to date for disarmm/matrix:latest" | wc -l)" -eq 1 ]; then
         echo >&2 "Your docker container is already up-to-date"
         exit 1
 else
@@ -432,8 +432,10 @@ for cont in $(docker ps -a --format '{{.Names}}') ; do
         docker run -d -e MAN_PORT=${contPort} -p ${contPort}:${contPort} -v ${hostVol}:/matrix/chaindata --name $cont disarmm/matrix
         lb
 done
+# add latest version of nodeMaint
+addMaint
 # finished!
-whiptail --title "Matrix AI Network - Updater" --msgbox "     Container Image updated!\n\n" 12 80
+whiptail --title "Matrix AI Network - Updater" --msgbox "     Container Images updated!\n\n" 12 80
 }
 
 copyDocker(){
