@@ -533,11 +533,11 @@ whiptail --title "Matrix AI Network - Installer" --msgbox "     Docker Installat
 manChoice=$(
 whiptail --title "Matrix AI Network Installer" --menu "How do you like your MAN?" 25 90 9 \
 	'1)' "Standalone - New intall with latest snapshot" \
-	'2)' "Standalone - Upgrade current install with snapshot" \
-	'3)' "Standalone - Upgrade current install without snapshot" \
+	'2)' "Standalone - Update current install with snapshot" \
+	'3)' "Standalone - Update current install without snapshot" \
 	'4)' "Docker - New install with latest snapshot" \
 	'5)' "Docker - Replace chaindata with latest snapshot block 1784250(coming soon)" \
-	'6)' "Docker - Upgrade container image" \
+	'6)' "Docker - Update container image" \
 	'7)' "Docker - Copy node" \
 	'8)' "Docker - Copy node - Advanced options(coming soon)" \
 	'9)' "exit" 3>&2 2>&1 1>&3
