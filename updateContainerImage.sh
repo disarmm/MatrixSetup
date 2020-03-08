@@ -53,7 +53,7 @@ for cont in $(docker ps -a --format '{{.Names}}') ; do
         contPort=$(docker inspect -f '{{.HostConfig.PortBindings}}' $cont | cut -d "[" -f 2 | cut -d "/" -f 1)
         hostVol=$(docker inspect -f '{{ .Mounts }}' $cont | cut -d " " -f 3)
 	docker stop $cont && docker rm $cont
-        docker run -d -e MAN_PORT=${contPort} -p ${contPort}:${contPort} -v ${hostVol}:/matrix/chaindata --name $cont disarmm/matrix
+        docker run -d --restart unless-stopped -e MAN_PORT=${contPort} -p ${contPort}:${contPort} -v ${hostVol}:/matrix/chaindata --name $cont disarmm/matrix
 	lb
 done
 # finished!
