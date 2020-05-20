@@ -16,7 +16,7 @@ apt install whiptail curl wget -y
 RES=$(echo -en '\001\033[0m\002')
 LBLUE=$(echo -en '\001\033[01;34m\002')
 
-# functions for later use
+# This is a long list of functions
 pause(){
 	read -p "$*"
 }
@@ -88,6 +88,13 @@ else
         exit 1
 fi
 }
+addLogCleanUpScript(){
+if [ "$(crontab -l | grep logCleanUp | wc -l)" -eq 0 ]; then
+        wget -O /usr/local/bin/logCleanUp https://raw.githubusercontent.com/disarmm/MatrixScripts/master/logCleanUp.sh
+        chmod a+x /usr/local/bin/logCleanUp
+        cronadd="0 1 * * * /usr/local/bin/logCleanUp"
+        (crontab -u root -l; echo "$cronadd" ) | crontab -u root -
+fi
 lb
 
 # intro stuff
@@ -415,7 +422,7 @@ else
         echo >&2 "Docker not installed, please choose new docker setup first"
         exit 1
 fi
-whiptail --title "Matrix AI Network - Updater" --msgbox "This option will update your container image without modifying any of your chaindata IF an image update is available. It will then recreate your existing containers with the new image using the same ports and chaindata as before. This should not be run if you have containers for anything other than matrix nodes. \n\n(Confirm on next screen)" 14 100
+whiptail --title "Matrix AI Network - Updater" --msgbox "This option will update your container image without modifying any of your chaindata IF an image update is available. It will then recreate your existing containers with the new image using the same ports and chaindata as before. This should NOT BE RUN if you have other non-matrix containers on your server! \n\n(Confirm on next screen)" 14 100
 confirm
 # check if docker is installed
 isDockerInstalled
@@ -434,6 +441,8 @@ for cont in $(docker ps -a --format '{{.Names}}') ; do
 done
 # add latest version of nodeMaint
 addMaint
+# add latest version of logCleanUp
+addLogCleanUpScript
 # finished!
 whiptail --title "Matrix AI Network - Updater" --msgbox "     Container Images updated!\n\n" 12 80
 }
