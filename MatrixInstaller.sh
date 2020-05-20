@@ -95,6 +95,7 @@ if [ "$(crontab -l | grep logCleanUp | wc -l)" -eq 0 ]; then
         cronadd="0 1 * * * /usr/local/bin/logCleanUp"
         (crontab -u root -l; echo "$cronadd" ) | crontab -u root -
 fi
+}
 lb
 
 # intro stuff
