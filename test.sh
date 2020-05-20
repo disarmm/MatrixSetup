@@ -1,4 +1,5 @@
 #!/bin/bash
+#test
 pause(){
         read -p "$*"
 }
