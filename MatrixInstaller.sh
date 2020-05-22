@@ -74,8 +74,13 @@ fi
 }
 checkForContainerUpdate(){
 if [ "$(docker pull disarmm/matrix | grep "Status: Image is up to date for disarmm/matrix:latest" | wc -l)" -eq 1 ]; then
-        echo >&2 "Your docker container is already up-to-date"
-        exit 1
+	if (whiptail --title "Confirmation Dialog" --yesno "You already have the newest version, would you like to update/repair anyway?" 8 78); then
+ 		:
+	else
+    		exit 1
+	fi
+#        echo >&2 "Your docker container is already up-to-date"
+#        exit 1
 else
         echo "Container image successfully updated"
 fi
@@ -423,7 +428,7 @@ else
         echo >&2 "Docker not installed, please choose new docker setup first"
         exit 1
 fi
-whiptail --title "Matrix AI Network - Updater" --msgbox "This option will update your container image without modifying any of your chaindata IF an image update is available. It will then recreate your existing containers with the new image using the same ports and chaindata as before. This should NOT BE RUN if you have other non-matrix containers on your server! \n\n(Confirm on next screen)" 14 100
+whiptail --title "Matrix AI Network - Updater" --msgbox "This option will update your container image without modifying any of your chaindata. It will remove your existing containers, update the container image, then recreate your containers using the same ports and chaindata as before. This will not affect other non-matrix containers on your system. \n\n(Confirm on next screen)" 14 100
 confirm
 # check if docker is installed
 isDockerInstalled
@@ -433,13 +438,16 @@ checkForContainerUpdate
 lb
 # Pull current container info and recreate with new image
 for cont in $(docker ps -a --format '{{.Names}}') ; do
-        echo "Updating container..."
-        contPort=$(docker inspect -f '{{.HostConfig.PortBindings}}' $cont | cut -d "[" -f 2 | cut -d "/" -f 1)
-        hostVol=$(docker inspect -f '{{ .Mounts }}' $cont | cut -d " " -f 3)
-        docker stop $cont && docker rm $cont
-        docker run -d --restart unless-stopped -e MAN_PORT=${contPort} -p ${contPort}:${contPort} -v ${hostVol}:/matrix/chaindata --name $cont disarmm/matrix
-        lb
+	if [ $(docker inspect -f '{{eq "/matrix/nodeConfig.sh" .Path}}' $cont) = "true" ]; then
+                echo "Updating container..."
+                contPort=$(docker inspect -f '{{.HostConfig.PortBindings}}' $cont | cut -d "[" -f 2 | cut -d "/" -f 1)
+                hostVol=$(docker inspect -f '{{ .Mounts }}' $cont | cut -d " " -f 3)
+                docker stop $cont && docker rm $cont
+                docker run -d --restart unless-stopped -e MAN_PORT=${contPort} -p ${contPort}:${contPort} -v ${hostVol}:/matrix/chaindata --name $cont disarmm/matrix
+                lb
+        fi
 done
+
 # add latest version of nodeMaint
 addMaint
 # add latest version of logCleanUp
