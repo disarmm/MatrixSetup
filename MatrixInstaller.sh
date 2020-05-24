@@ -110,7 +110,7 @@ whiptail --title "Matrix AI Network Installer" --msgbox "This installer will wal
 
 # define functions for different install types
 newStandalone(){
-whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will install your matrix mining node as a standalone node starting with the snapshot at block 1405031. With this installation type, you will not be able to run multiple nodes on this machine. If you would like to run multiple nodes now, or think you might in the future, it is best to start over and choose the new docker node setup." 14 100
+whiptail --title "Matrix AI Network - Installer" --msgbox "This installation type will install your matrix mining node as a standalone node starting with the snapshot at block 1784250. With this installation type, you will not be able to run multiple nodes on this machine. If you would like to run multiple nodes now, or think you might in the future, it is best to start over and choose the new docker node setup." 14 100
 confirm
 storageCheck
 i=0
@@ -145,14 +145,14 @@ lb
 echo "Downloading and installing files..."
 sleep 2
 lb
-wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $matrixPath/matrix/1405031.tar.gz && tar -zxvf $matrixPath/matrix/1405031.tar.gz -C $matrixPath/matrix/
+wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrix/1784250.tar.gz && mkdir $matrixPath/matrix/snapdir && tar -zxvf $matrixPath/matrix/1784250.tar.gz -C $matrixPath/matrix/snapdir
 lb
 wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $matrixPath/matrix/gman && chmod a+x /$matrixPath/matrix/gman
 lb
 wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $matrixPath/matrix/MANGenesis.json
 lb
 mkdir $matrixPath/matrix/chaindata/keystore
-rm $matrixPath/matrix/1405031.tar.gz
+rm $matrixPath/matrix/1784250.tar.gz
 # create encrypted entrust file
 whiptail --title "Creating entrust.json file..." --msgbox "On the next page you will be creating the password used to start your node. It should be different than the password you use to unlock your wallet in the wallet app. Please choose a password that is different than the password used to unlock your wallet A or wallet B in the wallet app." 12 80
 # running gman command to create entrust file
@@ -167,7 +167,7 @@ rm $matrixPath/matrix/signAccount.json
 matrixKeystore=$(whiptail --title "Creating wallet B keystore file..." --inputbox "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below" 12 80 3>&1 1>&2 2>&3)
 echo "$matrixKeystore" > $matrixPath/matrix/chaindata/keystore/${manWallet}
 # creating easy startup script
-echo -e "#!/bin/bash\ncd $matrixPath/matrix\nif [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanClient.sh
+echo -e "#!/bin/bash\ncd $matrixPath/matrix\nif [ ! -f "$matrixPath/matrix/firstRun" ]; then\n      touch $matrixPath/matrix/firstRun && $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust /$matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1784250"\nelse\n    $matrixPath/matrix/gman --datadir $matrixPath/matrix/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $matrixPath/matrix/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $matrixPath/matrix/gmanClient.sh
 chmod 775 $matrixPath/matrix/gmanClient.sh
 # copy start script
 cp $matrixPath/matrix/gmanClient.sh /usr/local/bin/gmanClient
@@ -177,7 +177,7 @@ whiptail --title "Matrix AI Network - Installer" --msgbox "     Installation Com
 
 updateStandaloneSnapshot()
 {
-whiptail --title "Matrix AI Network Installer" --msgbox "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This option will also replace your chaindata with the snapshot from block 1405031. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to keep your existing chaindata, please restart this installer and choose the correct option." 14 100
+whiptail --title "Matrix AI Network Installer" --msgbox "This installation type will locate wherever you currently have your node installed and update the gman files necessary to continue mining. This option will also replace your chaindata with the snapshot from block 1784250. This option is not meant to be used with the docker installation. If you need to update your docker files, or would like to keep your existing chaindata, please restart this installer and choose the correct option." 14 100
 confirm
 # perform pre-check for previous installations
 if [ $(find / -name gman ! -type d | wc -l) -eq 0 ]; then
@@ -258,16 +258,16 @@ lb
 echo "Downloading new files..."
 sleep 2
 lb
-wget www2.matrixainetwork.eu/snapshots/1405031.tar.gz -O $gmanPath/1405031.tar.gz && tar -zxvf $gmanPath/1405031.tar.gz -C $gmanPath/
+wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $gmanPath/1784250.tar.gz && mkdir $gmanPath/snapdir && tar -zxvf $gmanPath/1784250.tar.gz -C $gmanPath/snapdir/
 lb
 wget https://github.com/MatrixAINetwork/GMAN_CLIENT/raw/master/MAINNET/1022/linux/gman -O $gmanPath/gman && chmod a+x $gmanPath/gman
 lb
 wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
 mv $gmanPath/keystore $gmanPath/chaindata/keystore
-rm $gmanPath/1405031.tar.gz
+rm $gmanPath/1784250.tar.gz
 manWallet=$(whiptail --title "Creating gman startup script..." --inputbox "Please enter your wallet B address to create startup script" 12 80 3>&1 1>&2 2>&3)
 # Create start script and set an alias so it will run from any path
-echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanClient.sh
+echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1784250"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanClient.sh
 chmod 755 $gmanPath/gmanClient.sh
 # copy start script
 cp $gmanPath/gmanClient.sh /usr/local/bin/gmanClient
@@ -341,7 +341,7 @@ lb
 wget https://raw.githubusercontent.com/MatrixAINetwork/GMAN_CLIENT/master/MAINNET/1022/MANGenesis.json -O $gmanPath/MANGenesis.json
 # get address for startup script
 manWallet=$(whiptail --title "Creating gman startup script..." --inputbox "Please enter your wallet B address to create startup script" 12 80 3>&1 1>&2 2>&3)
-echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1405031"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanClient.sh
+echo -e "#!/bin/bash\ncd $gmanPath\nif [ ! -f "$gmanPath/firstRun" ]; then\n      touch $gmanPath/firstRun && $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full --loadsnapfile "TrieData1784250"\nelse\n    $gmanPath/gman --datadir $gmanPath/chaindata --networkid 1 --debug --verbosity 1 --port 50505 --manAddress $manWallet --entrust $gmanPath/entrust.json --gcmode archive --outputinfo 1 --syncmode full\nfi" > $gmanPath/gmanClient.sh
 chmod 755 $gmanPath/gmanClient.sh
 # copy start script
 cp $gmanPath/gmanClient.sh /usr/local/bin/gmanClient
@@ -403,12 +403,10 @@ echo "Downloading and installing matrix files..."
 lb
 mkdir $matrixPath/matrixDocker/$containerName/keystore
 mkdir $matrixPath/matrixDocker/$containerName/snapdir
-wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrixDocker/$containerName/1784250.tar.gz && tar -zxvf $matrixPath/matrixDocker/$containerName/1784250.tar.gz -C $matrixPath/matrixDocker/$containerName/snapdir --no-same-owner
+wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrixDocker/$containerName/1784250.tar.gz && && tar -zxvf $matrixPath/matrixDocker/$containerName/1784250.tar.gz -C $matrixPath/matrixDocker/$containerName/snapdir --no-same-owner
 lb
 rm $matrixPath/matrixDocker/$containerName/1784250.tar.gz
 
-
-#rm $matrixPath/matrixDocker/$containerName/1405031.tar.gz
 # create keystore wallet file
 matrixKeystore=$(whiptail --title "Creating wallet B keystore file..." --inputbox "Open your downloaded UTC wallet file with wordpad or notepad++ and copy/paste the contents below" 12 80 3>&1 1>&2 2>&3)
 echo "$matrixKeystore" > $matrixPath/matrixDocker/$containerName/keystore/${manWallet}
