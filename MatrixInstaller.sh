@@ -403,7 +403,7 @@ echo "Downloading and installing matrix files..."
 lb
 mkdir $matrixPath/matrixDocker/$containerName/keystore
 mkdir $matrixPath/matrixDocker/$containerName/snapdir
-wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrixDocker/$containerName/1784250.tar.gz && && tar -zxvf $matrixPath/matrixDocker/$containerName/1784250.tar.gz -C $matrixPath/matrixDocker/$containerName/snapdir --no-same-owner
+wget www2.matrixainetwork.eu/snapshots/1784250.tar.gz -O $matrixPath/matrixDocker/$containerName/1784250.tar.gz && tar -zxvf $matrixPath/matrixDocker/$containerName/1784250.tar.gz -C $matrixPath/matrixDocker/$containerName/snapdir --no-same-owner
 lb
 rm $matrixPath/matrixDocker/$containerName/1784250.tar.gz
 
